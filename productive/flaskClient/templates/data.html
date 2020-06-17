@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flask SocketIO Test</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+
+</head>
+<body>
+<h1>Data</h1>
+<h2>Rooms</h2>
+        <table class="room_table">
+          <tr>
+              <th>room</th>
+              <th>current Temperatur</th>
+              <th>current Humidity</th>
+          </tr>
+    {% for data in date %}
+            <tr id="{{data[0]}}">
+                <td>{{data[1]}}</td>
+                <td>{{data[2]}}°C</td>
+                <td>{{data[3]}}%</td>
+            </tr>
+    {% endfor %}
+            </table>
+
+
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    // verify our websocket connection is established
+    socket.on('TableUpdate', function(jsonData) {
+        let jsonObj = JSON.parse(jsonData);
+        let row = document.getElementById(jsonObj.rowID.toString());
+        if (jsonObj.type === "temp") {
+            row.children[1].textContent = jsonObj.value + "°C";
+        } else if (jsonObj.type === "hum"){
+            row.children[2].textContent = jsonObj.value + "%";
+        }
+    });
+  </script>
+
+</body>
+</html>

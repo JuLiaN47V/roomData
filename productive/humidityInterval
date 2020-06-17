@@ -1,0 +1,35 @@
+#!/usr/bin/python3
+
+import psycopg2
+
+connection = psycopg2.connect(user="sensors",
+        password="sensors",
+        host="127.0.0.1",
+        port="5432",
+        database="sensors")
+cursor = connection.cursor()
+cursor.execute("SELECT room, current_hum, hours_number FROM room_hums;")
+room_currenthums = cursor.fetchall()
+for room_currenthum in room_currenthums:
+    room = room_currenthum[0]
+    hum = room_currenthum[1]
+    number = int(room_currenthum[2])
+    if number == 0:
+        cursor.execute("UPDATE room_hums SET hours_0_hum = %s WHERE room = %s", (hum, room))
+    elif number == 1:
+        cursor.execute("UPDATE room_hums SET hours_1_hum = %s WHERE room = %s", (hum, room))
+    elif number == 2:
+        cursor.execute("UPDATE room_hums SET hours_2_hum = %s WHERE room = %s", (hum, room))
+    elif number == 3:
+        cursor.execute("UPDATE room_hums SET hours_3_hum = %s WHERE room = %s", (hum, room))
+    elif number == 4:
+        cursor.execute("UPDATE room_hums SET hours_4_hum = %s WHERE room = %s", (hum, room))
+    if number != 4:
+        newnumber = number + 1
+    else:
+        newnumber = 0
+    cursor.execute("UPDATE room_hums SET hours_number = %s WHERE room = %s", (newnumber, room))
+
+connection.commit()
+connection.close()
+
